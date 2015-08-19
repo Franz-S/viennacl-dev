@@ -2,7 +2,7 @@
 foreach(bench dense_blas scheduler)
    add_executable(${bench}-bench-cpu ${bench}.cpp)
 endforeach()
-
+add_executable(franz-bench-cpu franz_bench.cpp)
 if (ENABLE_UBLAS)
     include_directories(${Boost_INCLUDE_DIRS})
     foreach(bench sparse solver direct_solve)
