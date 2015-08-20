@@ -152,13 +152,13 @@ void bench(size_t BLAS_N, std::string const & prefix,int bereich)
         BENCHMARK_OP(a = norm_1(x),                  "L1",      std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
         BENCHMARK_OP(a = norm_2(x),                  "L2",      std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
         BENCHMARK_OP(a = norm_inf(x),                "Linf",    std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
-        BENCHMARK_OP(j=index_norm_inf(x),            "index_L", std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
+        BENCHMARK_OP(j=index_norm_inf(x),            "index.L", std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
         BENCHMARK_OP(a=max(x),                       "max",     std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
         BENCHMARK_OP(a=min(x),                       "min",     std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
         BENCHMARK_OP(a=sum(x),                       "sum",     std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
-        BENCHMARK_OP(plane_rotation(x, y, a, b),     "pla_rot", std::setprecision(3) << double(4*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
-        BENCHMARK_OP(inclusive_scan(x,y),            "in_scan", std::setprecision(3) << double(2*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
-        BENCHMARK_OP(exclusive_scan(x,y),            "ex_scan", std::setprecision(3) << double(2*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
+        BENCHMARK_OP(plane_rotation(x, y, a, b),     "pla.rot", std::setprecision(3) << double(4*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
+        BENCHMARK_OP(inclusive_scan(x,y),            "in.scan", std::setprecision(3) << double(2*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
+        BENCHMARK_OP(exclusive_scan(x,y),            "ex.scan", std::setprecision(3) << double(2*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
         j++;
         break;
     }
