@@ -125,6 +125,7 @@ void bench(size_t BLAS_N, std::string const & prefix,int bereich)
         init_random(x);
         init_random(y);
         init_random(z);
+        a++;
         break;
     }
     case 1:
@@ -212,7 +213,7 @@ void bench(size_t BLAS_N, std::string const & prefix,int bereich)
     output.close();
 
 }
-int main(int argc, char *argv[])
+int main(int , char *argv[])
 {
     //argv[1]-->vector or matrix size
     //argv[2]-->if the operations are(0:testing,1:Vector,2:Matrix coloum mayor,3:Matrix row mayor)
