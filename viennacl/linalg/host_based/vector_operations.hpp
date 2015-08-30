@@ -1056,32 +1056,19 @@ namespace detail
         vcl_size_t thread_stop  = std::min<vcl_size_t>(thread_start + work_per_thread, size1);
 
         NumericT thread_sum = 0;
-        for(vcl_size_t i = thread_start; i < thread_stop; i++)
+        for(vcl_size_t i = thread_start; i < thread_stop; ++i)
           thread_sum += data_vec1[i * inc1 + start1];
 
-        thread_results[omp_get_thread_num()] = thread_sum;
-      }
+        thread_results[(omp_get_thread_num()+1)%omp_get_max_threads()] = thread_sum;
+        thread_results[0]=0;
 
-      // exclusive-scan of thread results:
-      NumericT current_offset = 0;
-      for (vcl_size_t i=0; i<thread_results.size(); ++i)
-      {
-        NumericT tmp = thread_results[i];
-        thread_results[i] = current_offset;
-        current_offset += tmp;
-      }
+      #pragma omp barrier
 
       // exclusive/inclusive scan of each segment with correct offset:
-      #pragma omp parallel
-      {
-        vcl_size_t work_per_thread = (size1 - 1) / thread_results.size() + 1;
-        vcl_size_t thread_start = work_per_thread * omp_get_thread_num();
-        vcl_size_t thread_stop  = std::min<vcl_size_t>(thread_start + work_per_thread, size1);
-
-        NumericT thread_sum = thread_results[omp_get_thread_num()];
+        thread_sum = thread_results[omp_get_thread_num()];
         if (is_inclusive)
         {
-          for(vcl_size_t i = thread_start; i < thread_stop; i++)
+          for(vcl_size_t i = thread_start; i < thread_stop; ++i)
           {
             thread_sum += data_vec1[i * inc1 + start1];
             data_vec2[i * inc2 + start2] = thread_sum;
@@ -1089,7 +1076,7 @@ namespace detail
         }
         else
         {
-          for(vcl_size_t i = thread_start; i < thread_stop; i++)
+          for(vcl_size_t i = thread_start; i < thread_stop; ++i)
           {
             NumericT tmp = data_vec1[i * inc1 + start1];
             data_vec2[i * inc2 + start2] = thread_sum;
@@ -1103,7 +1090,7 @@ namespace detail
       NumericT sum = 0;
       if (is_inclusive)
       {
-        for(vcl_size_t i = 0; i < size1; i++)
+        for(vcl_size_t i = 0; i < size1; ++i)
         {
           sum += data_vec1[i * inc1 + start1];
           data_vec2[i * inc2 + start2] = sum;
@@ -1111,7 +1098,7 @@ namespace detail
       }
       else
       {
-        for(vcl_size_t i = 0; i < size1; i++)
+        for(vcl_size_t i = 0; i < size1; ++i)
         {
           NumericT tmp = data_vec1[i * inc1 + start1];
           data_vec2[i * inc2 + start2] = sum;

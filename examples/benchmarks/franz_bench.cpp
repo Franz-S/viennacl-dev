@@ -117,9 +117,9 @@ void bench(size_t BLAS_N, std::string const & prefix,int bereich)
         viennacl::vector<T> x(BLAS_N);
         viennacl::vector<T> y(BLAS_N);
         viennacl::vector<T> z(BLAS_N);
-        BENCHMARK_OP(a=max(x),                       "max",     std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
-        BENCHMARK_OP(a=min(x),                       "min",     std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
-        BENCHMARK_OP(a=sum(x),                       "sum",     std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
+        //BENCHMARK_OP(a=max(x),                       "max",     std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
+        //BENCHMARK_OP(a=min(x),                       "min",     std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
+        //BENCHMARK_OP(a=sum(x),                       "sum",     std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
         BENCHMARK_OP(inclusive_scan(x,y),            "in.scan", std::setprecision(3) << double(2*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
         BENCHMARK_OP(exclusive_scan(x,y),            "ex.scan", std::setprecision(3) << double(2*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
         init_random(x);
