@@ -1047,25 +1047,25 @@ namespace detail
     if (size1 > VIENNACL_OPENMP_VECTOR_MIN_SIZE)
     {
       std::vector<NumericT> thread_results(omp_get_max_threads());
-
+      vcl_size_t thread_count = omp_get_max_threads();
       // inclusive scan each thread segment:
       #pragma omp parallel
       {
-        vcl_size_t work_per_thread = (size1 - 1) / thread_results.size() + 1;
-        vcl_size_t thread_start = work_per_thread * omp_get_thread_num();
-        vcl_size_t thread_stop  = std::min<vcl_size_t>(thread_start + work_per_thread, size1);
+        vcl_size_t id = omp_get_thread_num();
+        vcl_size_t thread_start = (size1 * id) / thread_count;
+        vcl_size_t thread_stop  = (size1 * (id + 1)) / thread_count;
 
         NumericT thread_sum = 0;
         for(vcl_size_t i = thread_start; i < thread_stop; ++i)
           thread_sum += data_vec1[i * inc1 + start1];
 
-        thread_results[(omp_get_thread_num()+1)%omp_get_max_threads()] = thread_sum;
+        thread_results[(id+1)%thread_count] = thread_sum;
         thread_results[0]=0;
 
       #pragma omp barrier
 
       // exclusive/inclusive scan of each segment with correct offset:
-        thread_sum = thread_results[omp_get_thread_num()];
+        thread_sum = thread_results[id];
         if (is_inclusive)
         {
           for(vcl_size_t i = thread_start; i < thread_stop; ++i)
