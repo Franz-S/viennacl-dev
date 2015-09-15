@@ -7,11 +7,15 @@
 #include "viennacl/linalg/norm_inf.hpp"
 #include "viennacl/linalg/maxmin.hpp"
 #include "viennacl/linalg/sum.hpp"
+#include "viennacl/linalg/direct_solve.hpp"
 
 #include <iomanip>
 #include <stdlib.h>
 #include <fstream>
+#include <string.h>
 #define FILENAME "file.txt"
+#include <omp.h>
+
 
 
 int cmp(const void *x, const void *y)//the comparing for the sort func
@@ -66,7 +70,7 @@ void bench(size_t BLAS_N, std::string const & prefix,int bereich)
     using viennacl::linalg::prod;
     using viennacl::linalg::outer_prod;
     using viennacl::identity_matrix;
-    using viennacl::diag;
+    using viennacl::linalg::inplace_solve;
 
 #define A_SIZE 40//the number of iterations for the function
 
@@ -113,26 +117,28 @@ void bench(size_t BLAS_N, std::string const & prefix,int bereich)
     {
     case 0://For Testing
     {
-        long j;
-        T a = (T)2.4;
+
+        viennacl::matrix<T,viennacl::column_major> A(BLAS_N, BLAS_N);
+        viennacl::matrix<T,viennacl::column_major> B(BLAS_N, BLAS_N);
+        viennacl::matrix<T,viennacl::column_major> C(BLAS_N, BLAS_N);
+
         T b = (T)3.8;
-        viennacl::vector<T> x(BLAS_N);
-        viennacl::vector<T> y(BLAS_N);
-        viennacl::vector<T> z(BLAS_N);
+        T c = (T)3.8;
 
-        BENCHMARK_OP(j=index_norm_inf(x),            "index.L", std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
-        BENCHMARK_OP(y=element_fabs(x),              "fabs(x)", std::setprecision(3) << double(2*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
-        BENCHMARK_OP(y = a*x,                        "y=a*x",   std::setprecision(3) << double(2*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
-        BENCHMARK_OP(y = a * x+ b * z,               "y=ax+bz", std::setprecision(3) << double(3*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
-        BENCHMARK_OP(y = scalar_vector<T>(BLAS_N,a), "y[i]=a",  std::setprecision(3) << double(1*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
-        BENCHMARK_OP(y = x,                          "y=x",     std::setprecision(3) << double(2*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
-        j++;
+        init_random(A);
+        init_random(B);
+        init_random(C);
+
+        BENCHMARK_OP(A=B*b+C*c,                              "A=B*b+C*c",   std::setprecision(3) << double((2*BLAS_N+3*BLAS_N*BLAS_N)*sizeof(T))/time_spent * 1e-9, "GB/s")\
 
 
-        init_random(x);
-        init_random(y);
-        init_random(z);
-        a++;
+
+        //BENCHMARK_OP(inplace_solve(A,x,viennacl::linalg::upper_tag()), "solve.up",     std::setprecision(3) << double((BLAS_N+BLAS_N*BLAS_N/2)*sizeof(T))/time_spent * 1e-9, "GB/s")
+        //viennacl::linalg::upper_tag()
+        //viennacl::linalg::lower_tag()
+        //viennacl::linalg::unit_lower_tag()
+        //viennacl::linalg::unit_upper_tag()
+
         break;
     }
     case 1:
@@ -242,4 +248,5 @@ int main(int , char *argv[])
     output.open(FILENAME,std::ios::in|std::ios::out|std::ios::ate);
     output << std::endl;
     output.close();
+    return 0;
 }
