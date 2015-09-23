@@ -117,23 +117,57 @@ void bench(size_t BLAS_N, std::string const & prefix,int bereich)
     {
     case 0://For Testing
     {
+        viennacl::vector<T> x(BLAS_N);
+        viennacl::vector<T> y(BLAS_N);
+        T a = (T)2.4;
 
+        init_random(x);
+        init_random(y);
+        BENCHMARK_OP(y = a*x,                        "y=a*x",   std::setprecision(3) << double(2*BLAS_N*sizeof(T))/time_spent * 1e-9, "GB/s")
+
+
+        /*
+        {
         viennacl::matrix<T,viennacl::column_major> A(BLAS_N, BLAS_N);
-        viennacl::matrix<T,viennacl::column_major> B(BLAS_N, BLAS_N);
-        viennacl::matrix<T,viennacl::column_major> C(BLAS_N, BLAS_N);
-
-        T b = (T)3.8;
-        T c = (T)3.8;
-
         init_random(A);
-        init_random(B);
-        init_random(C);
-
-        BENCHMARK_OP(A=B*b+C*c,                              "A=B*b+C*c",   std::setprecision(3) << double((2*BLAS_N+3*BLAS_N*BLAS_N)*sizeof(T))/time_spent * 1e-9, "GB/s")\
+        BENCHMARK_OP(y=prod(A,x),                            "col.y=prod(A.x)", std::setprecision(3) << double((2*BLAS_N+BLAS_N*BLAS_N)*sizeof(T))/time_spent * 1e-9, "GB/s")
 
 
+        init_random(x);
+        BENCHMARK_OP(inplace_solve(A,x,viennacl::linalg::upper_tag()), "col.solve.up",     std::setprecision(3) << double((BLAS_N+BLAS_N*BLAS_N/2)*sizeof(T))/time_spent * 1e-9, "GB/s")
 
-        //BENCHMARK_OP(inplace_solve(A,x,viennacl::linalg::upper_tag()), "solve.up",     std::setprecision(3) << double((BLAS_N+BLAS_N*BLAS_N/2)*sizeof(T))/time_spent * 1e-9, "GB/s")
+        init_random(x);
+        BENCHMARK_OP(inplace_solve(A,x,viennacl::linalg::unit_upper_tag()), "col.u.solve.up",     std::setprecision(3) << double((BLAS_N+BLAS_N*BLAS_N/2)*sizeof(T))/time_spent * 1e-9, "GB/s")
+
+        init_random(x);
+        BENCHMARK_OP(inplace_solve(A,x,viennacl::linalg::lower_tag()), "col.solve.low",     std::setprecision(3) << double((BLAS_N+BLAS_N*BLAS_N/2)*sizeof(T))/time_spent * 1e-9, "GB/s")
+
+        init_random(x);
+        BENCHMARK_OP(inplace_solve(A,x,viennacl::linalg::unit_lower_tag()), "col.u.solve.low",     std::setprecision(3) << double((BLAS_N+BLAS_N*BLAS_N/2)*sizeof(T))/time_spent * 1e-9, "GB/s")
+        }
+
+
+        init_random(x);
+        init_random(y);
+        {
+        viennacl::matrix<T,viennacl::row_major> A(BLAS_N, BLAS_N);
+        init_random(A);
+
+        BENCHMARK_OP(y=prod(A,x),                            "row.y=prod(A.x)", std::setprecision(3) << double((2*BLAS_N+BLAS_N*BLAS_N)*sizeof(T))/time_spent * 1e-9, "GB/s")
+
+        init_random(x);
+        BENCHMARK_OP(inplace_solve(A,x,viennacl::linalg::upper_tag()), "row.solve.up",     std::setprecision(3) << double((BLAS_N+BLAS_N*BLAS_N/2)*sizeof(T))/time_spent * 1e-9, "GB/s")
+
+        init_random(x);
+        BENCHMARK_OP(inplace_solve(A,x,viennacl::linalg::unit_upper_tag()), "row.u.solve.up",     std::setprecision(3) << double((BLAS_N+BLAS_N*BLAS_N/2)*sizeof(T))/time_spent * 1e-9, "GB/s")
+
+        init_random(x);
+        BENCHMARK_OP(inplace_solve(A,x,viennacl::linalg::lower_tag()), "row.solve.low",     std::setprecision(3) << double((BLAS_N+BLAS_N*BLAS_N/2)*sizeof(T))/time_spent * 1e-9, "GB/s")
+
+        init_random(x);
+        BENCHMARK_OP(inplace_solve(A,x,viennacl::linalg::unit_lower_tag()), "row.u.solve.low",     std::setprecision(3) << double((BLAS_N+BLAS_N*BLAS_N/2)*sizeof(T))/time_spent * 1e-9, "GB/s")
+        }*/
+
         //viennacl::linalg::upper_tag()
         //viennacl::linalg::lower_tag()
         //viennacl::linalg::unit_lower_tag()
