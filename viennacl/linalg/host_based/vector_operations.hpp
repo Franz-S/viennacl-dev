@@ -253,6 +253,7 @@ void avbv_v(vector_base<NumericT> & vec1,
     }
     else
     {
+    //HiHo
 #ifdef VIENNACL_WITH_OPENMP
       #pragma omp parallel for if (size1 > VIENNACL_OPENMP_VECTOR_MIN_SIZE)
 #endif
@@ -381,7 +382,7 @@ void element_op(vector_base<NumericT> & vec1,
 
   vcl_size_t start2 = viennacl::traits::start(proxy.lhs());
   vcl_size_t inc2   = viennacl::traits::stride(proxy.lhs());
-
+//HiHo
 #ifdef VIENNACL_WITH_OPENMP
   #pragma omp parallel for if (size1 > VIENNACL_OPENMP_VECTOR_MIN_SIZE)
 #endif
@@ -998,6 +999,7 @@ void sum_impl(vector_base<NumericT> const & vec1,
   vcl_size_t size1  = viennacl::traits::size(vec1);
 
   value_type temp = 0;
+  //HiHo
 #ifdef VIENNACL_WITH_OPENMP
   #pragma omp parallel for reduction(+:temp) if (size1 > VIENNACL_OPENMP_VECTOR_MIN_SIZE)
 #endif

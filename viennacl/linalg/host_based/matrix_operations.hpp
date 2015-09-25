@@ -184,6 +184,7 @@ void trans(const matrix_expression<const matrix_base<NumericT, SizeT, DistanceT>
   }
   else
   {
+  //HiHo
 #ifdef VIENNACL_WITH_OPENMP
     #pragma omp parallel for if ((A_size1*A_size2) > VIENNACL_OPENMP_MATRIX_MIN_SIZE)
 #endif
@@ -298,6 +299,7 @@ void am(matrix_base<NumericT> & mat1,
     }
     else
     {
+    //HiHo
 #ifdef VIENNACL_WITH_OPENMP
       #pragma omp parallel for if ((A_size1*A_size2) > VIENNACL_OPENMP_MATRIX_MIN_SIZE)
 #endif
@@ -567,6 +569,7 @@ void ambm_m(matrix_base<NumericT> & mat1,
     }
     else if (!reciprocal_alpha && !reciprocal_beta)
     {
+    //HiHo
 #ifdef VIENNACL_WITH_OPENMP
       #pragma omp parallel for if ((A_size1*A_size2) > VIENNACL_OPENMP_MATRIX_MIN_SIZE)
 #endif
@@ -613,6 +616,7 @@ void matrix_assign(matrix_base<NumericT> & mat, NumericT s, bool clear = false)
   }
   else
   {
+  //HiHo
     detail::matrix_array_wrapper<value_type, column_major, false> wrapper_A(data_A, A_start1, A_start2, A_inc1, A_inc2, A_internal_size1, A_internal_size2);
 
 #ifdef VIENNACL_WITH_OPENMP
