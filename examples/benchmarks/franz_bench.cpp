@@ -94,6 +94,10 @@ void bench(size_t BLAS_N, std::string const & prefix,int bereich)
     OPERATION; \
     viennacl::backend::finish(); \
     time_spent_a[i] = timer.get()-time_spent_a[i]; \
+    const long size = 10*1024*1024;\
+    char *temp_flush = (char *)malloc(size);\
+    memset(temp_flush,4,size);\
+    free(temp_flush);\
   } \
   qsort(time_spent_a, sizeof(time_spent_a)/sizeof(time_spent_a[0]), sizeof(time_spent_a[0]), cmp);\
   time_spent=time_spent_a[(long)A_SIZE/3]; \
