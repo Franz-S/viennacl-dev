@@ -186,7 +186,7 @@ void trans(const matrix_expression<const matrix_base<NumericT, SizeT, DistanceT>
   {
   //HiHo
 #ifdef VIENNACL_WITH_OPENMP
-    #pragma omp parallel for if ((A_size1*A_size2) > VIENNACL_OPENMP_MATRIX_MIN_SIZE)
+    #pragma omp parallel for
 #endif
     for(long i = 0; i < static_cast<long>(row_count*col_count); ++i)//This is the main part of the transposition
     {
@@ -301,7 +301,7 @@ void am(matrix_base<NumericT> & mat1,
     {
     //HiHo
 #ifdef VIENNACL_WITH_OPENMP
-      #pragma omp parallel for if ((A_size1*A_size2) > VIENNACL_OPENMP_MATRIX_MIN_SIZE)
+      #pragma omp parallel for
 #endif
       for (long col = 0; col < static_cast<long>(A_size2); ++col)
         for (vcl_size_t row = 0; row < A_size1; ++row)
@@ -571,7 +571,7 @@ void ambm_m(matrix_base<NumericT> & mat1,
     {
     //HiHo
 #ifdef VIENNACL_WITH_OPENMP
-      #pragma omp parallel for if ((A_size1*A_size2) > VIENNACL_OPENMP_MATRIX_MIN_SIZE)
+      #pragma omp parallel for
 #endif
       for (long col = 0; col < static_cast<long>(A_size2); ++col)
         for (vcl_size_t row = 0; row < A_size1; ++row)
@@ -620,7 +620,7 @@ void matrix_assign(matrix_base<NumericT> & mat, NumericT s, bool clear = false)
     detail::matrix_array_wrapper<value_type, column_major, false> wrapper_A(data_A, A_start1, A_start2, A_inc1, A_inc2, A_internal_size1, A_internal_size2);
 
 #ifdef VIENNACL_WITH_OPENMP
-    #pragma omp parallel for if ((A_size1*A_size2) > VIENNACL_OPENMP_MATRIX_MIN_SIZE)
+    #pragma omp parallel for
 #endif
     for (long col = 0; col < static_cast<long>(A_size2); ++col)
       for (vcl_size_t row = 0; row < A_size1; ++row)
