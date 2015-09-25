@@ -185,6 +185,7 @@ void trans(const matrix_expression<const matrix_base<NumericT, SizeT, DistanceT>
   else
   {
   //HiHo
+  if ((A_size1*A_size2) > VIENNACL_OPENMP_MATRIX_MIN_SIZE){
 #ifdef VIENNACL_WITH_OPENMP
     #pragma omp parallel for
 #endif
@@ -202,6 +203,24 @@ void trans(const matrix_expression<const matrix_base<NumericT, SizeT, DistanceT>
       for(vcl_size_t j = 0; j < (sub_mat_size); ++j)
         for(vcl_size_t k = 0; k < (sub_mat_size); ++k)
           wrapper_B(k, j)=wrapper_A(j, k);
+    }
+    }
+    else{
+      for(long i = 0; i < static_cast<long>(row_count*col_count); ++i)//This is the main part of the transposition
+      {
+        vcl_size_t row = vcl_size_t(i) / col_count;
+        vcl_size_t col = vcl_size_t(i) % col_count;
+
+        detail::matrix_array_wrapper<value_type const, column_major, false> wrapper_A(data_A, A_start1 + A_inc1 * (row * sub_mat_size)
+                                                                                    , A_start2 + A_inc2 * (col * sub_mat_size), A_inc1
+                                                                                    , A_inc2, A_internal_size1, A_internal_size2);
+        detail::matrix_array_wrapper<value_type      , column_major, false> wrapper_B(data_B, B_start1 + B_inc1 * (col * sub_mat_size)
+                                                                                    , B_start2 + B_inc2 * (row * sub_mat_size), B_inc1
+                                                                                    , B_inc2, B_internal_size1, B_internal_size2);
+        for(vcl_size_t j = 0; j < (sub_mat_size); ++j)
+          for(vcl_size_t k = 0; k < (sub_mat_size); ++k)
+            wrapper_B(k, j)=wrapper_A(j, k);
+      }
     }
     { //This is the transposition of the remainder on the right side of the matrix
       detail::matrix_array_wrapper<value_type const, column_major, false> wrapper_A(data_A, A_start1
@@ -300,12 +319,21 @@ void am(matrix_base<NumericT> & mat1,
     else
     {
     //HiHo
+    if ((A_size1*A_size2) > VIENNACL_OPENMP_MATRIX_MIN_SIZE)
+    {
 #ifdef VIENNACL_WITH_OPENMP
       #pragma omp parallel for
 #endif
       for (long col = 0; col < static_cast<long>(A_size2); ++col)
         for (vcl_size_t row = 0; row < A_size1; ++row)
           wrapper_A(row, col) = wrapper_B(row, col) * data_alpha;
+    }
+    else{
+      for (long col = 0; col < static_cast<long>(A_size2); ++col)
+        for (vcl_size_t row = 0; row < A_size1; ++row)
+          wrapper_A(row, col) = wrapper_B(row, col) * data_alpha;
+    }
+
     }
   }
 }
@@ -570,12 +598,19 @@ void ambm_m(matrix_base<NumericT> & mat1,
     else if (!reciprocal_alpha && !reciprocal_beta)
     {
     //HiHo
+    if ((A_size1*A_size2) > VIENNACL_OPENMP_MATRIX_MIN_SIZE){
 #ifdef VIENNACL_WITH_OPENMP
       #pragma omp parallel for
 #endif
       for (long col = 0; col < static_cast<long>(A_size2); ++col)
         for (vcl_size_t row = 0; row < A_size1; ++row)
           wrapper_A(row, col) += wrapper_B(row, col) * data_alpha + wrapper_C(row, col) * data_beta;
+    }
+    else{
+      for (long col = 0; col < static_cast<long>(A_size2); ++col)
+        for (vcl_size_t row = 0; row < A_size1; ++row)
+          wrapper_A(row, col) += wrapper_B(row, col) * data_alpha + wrapper_C(row, col) * data_beta;
+    }
     }
   }
 
@@ -616,9 +651,10 @@ void matrix_assign(matrix_base<NumericT> & mat, NumericT s, bool clear = false)
   }
   else
   {
-  //HiHo
     detail::matrix_array_wrapper<value_type, column_major, false> wrapper_A(data_A, A_start1, A_start2, A_inc1, A_inc2, A_internal_size1, A_internal_size2);
-
+ //HiHo
+  if ((A_size1*A_size2) > VIENNACL_OPENMP_MATRIX_MIN_SIZE)
+  {
 #ifdef VIENNACL_WITH_OPENMP
     #pragma omp parallel for
 #endif
@@ -627,6 +663,12 @@ void matrix_assign(matrix_base<NumericT> & mat, NumericT s, bool clear = false)
         wrapper_A(row, static_cast<vcl_size_t>(col)) = alpha;
         //data_A[index_generator_A::mem_index(row * A_inc1 + A_start1, col * A_inc2 + A_start2, A_internal_size1, A_internal_size2)]
         // = data_B[index_generator_B::mem_index(row * B_inc1 + B_start1, col * B_inc2 + B_start2, B_internal_size1, B_internal_size2)] * alpha;
+  }
+  else{
+    for (long col = 0; col < static_cast<long>(A_size2); ++col)
+      for (vcl_size_t row = 0; row < A_size1; ++row)
+        wrapper_A(row, static_cast<vcl_size_t>(col)) = alpha;
+  }
   }
 }
 

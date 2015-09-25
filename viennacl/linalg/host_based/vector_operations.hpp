@@ -254,11 +254,19 @@ void avbv_v(vector_base<NumericT> & vec1,
     else
     {
     //HiHo
+    if (size1 > VIENNACL_OPENMP_VECTOR_MIN_SIZE){
 #ifdef VIENNACL_WITH_OPENMP
       #pragma omp parallel for
 #endif
       for (long i = 0; i < static_cast<long>(size1); ++i)
         data_vec1[static_cast<vcl_size_t>(i)*inc1+start1] += data_vec2[static_cast<vcl_size_t>(i)*inc2+start2] * data_alpha + data_vec3[static_cast<vcl_size_t>(i)*inc3+start3] * data_beta;
+    }
+    else{
+      for (long i = 0; i < static_cast<long>(size1); ++i)
+          data_vec1[static_cast<vcl_size_t>(i)*inc1+start1] += data_vec2[static_cast<vcl_size_t>(i)*inc2+start2] * data_alpha + data_vec3[static_cast<vcl_size_t>(i)*inc3+start3] * data_beta;
+
+    }
+
     }
   }
 }
@@ -383,11 +391,19 @@ void element_op(vector_base<NumericT> & vec1,
   vcl_size_t start2 = viennacl::traits::start(proxy.lhs());
   vcl_size_t inc2   = viennacl::traits::stride(proxy.lhs());
 //HiHo
+if (size1 > VIENNACL_OPENMP_VECTOR_MIN_SIZE)
+{
 #ifdef VIENNACL_WITH_OPENMP
   #pragma omp parallel for
 #endif
   for (long i = 0; i < static_cast<long>(size1); ++i)
     OpFunctor::apply(data_vec1[static_cast<vcl_size_t>(i)*inc1+start1], data_vec2[static_cast<vcl_size_t>(i)*inc2+start2]);
+}
+else{
+for (long i = 0; i < static_cast<long>(size1); ++i)
+    OpFunctor::apply(data_vec1[static_cast<vcl_size_t>(i)*inc1+start1], data_vec2[static_cast<vcl_size_t>(i)*inc2+start2]);
+}
+
 }
 
 
@@ -1000,11 +1016,20 @@ void sum_impl(vector_base<NumericT> const & vec1,
 
   value_type temp = 0;
   //HiHo
-#ifdef VIENNACL_WITH_OPENMP
+  if (size1 > VIENNACL_OPENMP_VECTOR_MIN_SIZE)
+  {
+  #ifdef VIENNACL_WITH_OPENMP
   #pragma omp parallel for reduction(+:temp)
-#endif
+  #endif
   for (long i = 0; i < static_cast<long>(size1); ++i)
     temp += data_vec1[static_cast<vcl_size_t>(i)*inc1+start1];
+  }
+  else
+  {
+  for (long i = 0; i < static_cast<long>(size1); ++i)
+    temp += data_vec1[static_cast<vcl_size_t>(i)*inc1+start1];
+  }
+
 
   result = temp;  //Note: Assignment to result might be expensive, thus 'temp' is used for accumulation
 }
